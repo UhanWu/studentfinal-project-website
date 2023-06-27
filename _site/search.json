@@ -1,0 +1,16 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Predicting Who Will Win Wimbledon",
+    "section": "",
+    "text": "This is a Quarto website.\nTo learn more about Quarto websites visit https://quarto.org/docs/websites.\n\n\n# A tibble: 1,493 × 8\n   Surface Winner        Loser              WRank LRank Wsets Lsets upset\n   &lt;chr&gt;   &lt;chr&gt;         &lt;chr&gt;              &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;\n 1 Hard    Giron M.      Gasquet R.            61    68     2     1     0\n 2 Hard    Mcdonald M.   Galan D.E.            63    67     1     0     0\n 3 Hard    Kecmanovic M. O Connell C.          29    78     2     0     0\n 4 Hard    Nishioka Y.   Rune H.               36    11     2     1     1\n 5 Hard    Popyrin A.    Auger-Aliassime F.   120     6     2     0     1\n 6 Hard    Halys Q.      Thompson J.           64    84     2     0     0\n 7 Hard    Safiullin R.  Ymer M.               88    69     2     0     1\n 8 Hard    Draper J.     Kwon S.W.             42    83     2     0     0\n 9 Hard    Kokkinakis T. Cressy M.             93    34     2     0     1\n10 Hard    Medvedev D.   Sonego L.              7    45     1     0     0\n# ℹ 1,483 more rows\n\n\n# A tibble: 313 × 8\n   name  surface num_wins num_losses num_upsets num_was_upset sets_won sets_lost\n   &lt;chr&gt; &lt;chr&gt;      &lt;int&gt;      &lt;int&gt;      &lt;dbl&gt;         &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;\n 1 Albo… Clay           2          3          1             0        4         8\n 2 Albo… Hard           4          5          1             1        9        11\n 3 Alca… Clay          25          3          0             3       57        13\n 4 Alca… Grass          5         NA          0            NA       NA        NA\n 5 Alca… Hard          10          1          0             1       20         2\n 6 Altm… Clay           6          5          2             1       17        14\n 7 Altm… Hard           1          5          0             0        5        11\n 8 Arna… Clay           5          4          4             0       13        12\n 9 Auge… Clay           1          4          0             3        4         7\n10 Auge… Hard          12          7          0             5       28        22\n# ℹ 303 more rows"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "About this site\n\n1 + 1\n\n[1] 2"
+  }
+]

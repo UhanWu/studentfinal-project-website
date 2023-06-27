@@ -7,5 +7,72 @@ This is a Quarto website.
 To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
 
 ```{r}
-1 + 1
+#| echo: false
+#| message: false
+#| label: setup
+library(tidyverse)
+library(readxl)
 ```
+
+```{r}
+#| echo: false
+#| warning: false
+#create new tibble with 
+#                       name, 
+#                       w/l ratio on each surface (clay, hard, grass), 
+#                       num of upsets (where ranking is lower than loser) performed, 
+#                       num of upsets against, 
+#                       num of sets won
+#                       num of sets lost
+
+data <- read_excel("data/2023ATPResults.xlsx") |>
+  select(Surface, Winner:LRank, Wsets, Lsets) |>
+  mutate(WRank = as.double(WRank), LRank = as.double(LRank)) |>
+  mutate(WRank = replace(WRank, is.na(WRank), 10000),
+         LRank = replace(LRank, is.na(LRank), 10000)) |>
+  mutate(upset = if_else(WRank > LRank, 1, 0))
+#DEAL WITH PROBLEM WHERE RANK IS NA
+data
+
+#creating each stat as own tibble
+player_wins <- data |> 
+  count(Winner, .by = Surface) |>
+  rename(surface = .by, name = Winner, num_wins = n)
+
+player_losses <- data |>
+  count(Loser, .by = Surface) |>
+  rename(surface = .by, name = Loser, num_losses = n)
+
+player_upset_wins <- data |>
+  summarize(num_upsets = sum(upset), .by = c(Surface, Winner)) |>
+  rename(surface = Surface, name = Winner)
+
+player_upset_losses <- data |>
+  summarize(num_was_upset = sum(upset), .by = c(Surface, Loser)) |>
+  rename(surface = Surface, name = Loser)
+
+player_win_sets <- data |>
+  summarize(wsets_won = sum(Wsets, na.rm = TRUE), 
+            wsets_lost = sum(Lsets, na.rm = TRUE), 
+            .by = c(Surface, Winner)) |>
+  rename(surface = Surface, name = Winner)
+
+player_loss_sets <- data |>
+  summarize(lsets_won = sum(Lsets, na.rm = TRUE), 
+            lsets_lost = sum(Wsets, na.rm = TRUE), 
+            .by = c(Surface, Loser)) |>
+  rename(surface = Surface, name = Loser)
+
+#joining tibbles
+upsets <- left_join(player_upset_wins, player_upset_losses, by = c("name", "surface"))
+wins_and_losses <- left_join(player_wins, player_losses, by = c("name", "surface")) 
+won_lost_sets <- left_join(player_win_sets, player_loss_sets, by = c("name", "surface"))
+win_loss_upset <- left_join(wins_and_losses, upsets, by = c("name", "surface"))
+all_stats <- left_join(win_loss_upset, won_lost_sets, by = c("name", "surface"))
+
+all_stats |>
+  mutate(sets_won = wsets_won + lsets_won,
+         sets_lost = wsets_lost + lsets_lost) |>
+  select(name:num_was_upset, sets_won, sets_lost)
+```
+
