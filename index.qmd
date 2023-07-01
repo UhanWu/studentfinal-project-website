@@ -2,10 +2,6 @@
 title: "Predicting Who Will Win Wimbledon"
 ---
 
-This is a Quarto website.
-
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
-
 ```{r}
 #| echo: false
 #| message: false
@@ -25,13 +21,15 @@ library(readxl)
 #                       num of sets won
 #                       num of sets lost
 
-data <- read_excel("data/2023ATPResults.xlsx") |>
-  select(Surface, Winner:LRank, Wsets, Lsets) |>
+data <- read_excel("data/2023ATPResults2.xlsx") |>
+  select(Surface, Winner:LRank, Wsets, Lsets, Comment) |>
+  filter(Comment == "Completed") |>
   mutate(WRank = as.double(WRank), LRank = as.double(LRank)) |>
   mutate(WRank = replace(WRank, is.na(WRank), 10000),
          LRank = replace(LRank, is.na(LRank), 10000)) |>
   mutate(upset = if_else(WRank > LRank, 1, 0))
-#DEAL WITH PROBLEM WHERE RANK IS NA
+#DEAL WITH PROBLEM WHERE RANK IS NA (done)
+#DEAL WITH PROBLEM WHERE MATCH ISNT COMPLETED: ignore if match is "Retired" or "Walkover"
 data
 
 #creating each stat as own tibble
@@ -64,15 +62,30 @@ player_loss_sets <- data |>
   rename(surface = Surface, name = Loser)
 
 #joining tibbles
-upsets <- left_join(player_upset_wins, player_upset_losses, by = c("name", "surface"))
-wins_and_losses <- left_join(player_wins, player_losses, by = c("name", "surface")) 
-won_lost_sets <- left_join(player_win_sets, player_loss_sets, by = c("name", "surface"))
+upsets <- left_join(player_upset_wins, player_upset_losses, by = c("name", "surface")) |>
+  replace_na(list(num_was_upset = 0))
+wins_and_losses <- left_join(player_wins, player_losses, by = c("name", "surface")) |>
+  replace_na(list(num_losses = 0))
+won_lost_sets <- left_join(player_win_sets, player_loss_sets, by = c("name", "surface")) |>
+  replace_na(list(lsets_won = 0, lsets_lost = 0, wsets_won = 0, wsets_lost = 0))
 win_loss_upset <- left_join(wins_and_losses, upsets, by = c("name", "surface"))
-all_stats <- left_join(win_loss_upset, won_lost_sets, by = c("name", "surface"))
-
-all_stats |>
+all_stats <- left_join(win_loss_upset, won_lost_sets, by = c("name", "surface")) |>
   mutate(sets_won = wsets_won + lsets_won,
          sets_lost = wsets_lost + lsets_lost) |>
-  select(name:num_was_upset, sets_won, sets_lost)
+  select(name:num_was_upset, sets_won, sets_lost) |>
+  mutate(name = tolower(name))
+
+ppl_in_wimbledon <- read_excel("data/Wimbledon2023Draw.xlsx") |>
+  mutate(name = tolower(name))
+
+name_vector <- ppl_in_wimbledon$name
+
+#all_stats
+#names w/ ' are just spaces, i.e O'Connell = O Connell
+#Wolf J.J. instead of Wolf J.
+
+selected_rows <- all_stats[all_stats$name %in% name_vector, ]
+selected_rows
+
 ```
 
