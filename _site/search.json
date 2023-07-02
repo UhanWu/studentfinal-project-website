@@ -4,7 +4,7 @@
     "href": "index.html",
     "title": "Predicting Who Will Win Wimbledon",
     "section": "",
-    "text": "Based on results from all matches from the 2022 and 2023 seasons.\n\n\n# A tibble: 3 × 8\n  name   surface num_wins num_losses num_upsets num_was_upset sets_won sets_lost\n  &lt;chr&gt;  &lt;chr&gt;      &lt;int&gt;      &lt;int&gt;      &lt;dbl&gt;         &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;\n1 djoko… Clay          26          7          1             7       69        22\n2 djoko… Grass          7          0          0             0       21         6\n3 djoko… Hard          34          3          7             3       76        11"
+    "text": "Based on results from all matches from the 2022 and 2023 seasons.\n\n\n# A tibble: 112 × 2\n   name         sum_points\n   &lt;chr&gt;             &lt;dbl&gt;\n 1 alcaraz c.        4186.\n 2 djokovic n.       3112.\n 3 medvedev d.       3003.\n 4 sinner j.         2668.\n 5 tsitsipas s.      2554.\n 6 rublev a.         2455.\n 7 norrie c.         2217.\n 8 fritz t.          2110.\n 9 ruud c.           1764.\n10 rune h.           1575 \n# ℹ 102 more rows"
   },
   {
     "objectID": "about.html",

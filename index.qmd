@@ -1,7 +1,7 @@
 ---
 title: "Predicting Who Will Win Wimbledon"
 ---
-
+Based on results from all matches from the 2022 and 2023 seasons.
 ```{r}
 #| echo: false
 #| message: false
@@ -13,24 +13,24 @@ library(readxl)
 ```{r}
 #| echo: false
 #| warning: false
-#create new tibble with 
-#                       name, 
-#                       w/l ratio on each surface (clay, hard, grass), 
-#                       num of upsets (where ranking is lower than loser) performed, 
-#                       num of upsets against, 
-#                       num of sets won
-#                       num of sets lost
+#| label: data
 
-data <- read_excel("data/2023ATPResults2.xlsx") |>
+#combining results for 2022 and 2023
+data1 <- read_excel("data/2023ATPResults2.xlsx") |>
   select(Surface, Winner:LRank, Wsets, Lsets, Comment) |>
   filter(Comment == "Completed") |>
   mutate(WRank = as.double(WRank), LRank = as.double(LRank)) |>
   mutate(WRank = replace(WRank, is.na(WRank), 10000),
          LRank = replace(LRank, is.na(LRank), 10000)) |>
   mutate(upset = if_else(WRank > LRank, 1, 0))
-#DEAL WITH PROBLEM WHERE RANK IS NA (done)
-#DEAL WITH PROBLEM WHERE MATCH ISNT COMPLETED: ignore if match is "Retired" or "Walkover"
-data
+data2 <- read_excel("data/2022ATPResults.xlsx") |>
+  select(Surface, Winner:LRank, Wsets, Lsets, Comment) |>
+  filter(Comment == "Completed") |>
+  mutate(WRank = as.double(WRank), LRank = as.double(LRank)) |>
+  mutate(WRank = replace(WRank, is.na(WRank), 10000),
+         LRank = replace(LRank, is.na(LRank), 10000)) |>
+  mutate(upset = if_else(WRank > LRank, 1, 0))
+data <- bind_rows(data1, data2)
 
 #creating each stat as own tibble
 player_wins <- data |> 
@@ -75,6 +75,7 @@ all_stats <- left_join(win_loss_upset, won_lost_sets, by = c("name", "surface"))
   select(name:num_was_upset, sets_won, sets_lost) |>
   mutate(name = tolower(name))
 
+#selecting only the people in wimbledon
 ppl_in_wimbledon <- read_excel("data/Wimbledon2023Draw.xlsx") |>
   mutate(name = tolower(name))
 
@@ -85,7 +86,10 @@ name_vector <- ppl_in_wimbledon$name
 #Wolf J.J. instead of Wolf J.
 
 selected_rows <- all_stats[all_stats$name %in% name_vector, ]
-selected_rows
-
+selected_rows |>
+ mutate(points = if_else(surface == "Grass", 3*((num_wins - num_losses)*50 + 5*num_upsets - 2*num_was_upset + (sets_won - sets_lost)/2)/2, (num_wins - num_losses)*50 + 5*num_upsets - 2*num_was_upset + (sets_won - sets_lost)/2)) |>
+  group_by(name) |>
+  summarize(sum_points = sum(points)) |>
+  arrange(desc(sum_points))
 ```
 
