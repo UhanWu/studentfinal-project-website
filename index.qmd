@@ -1,7 +1,7 @@
 ---
-title: "Predicting Who Will Win Wimbledon"
+title: "Predicting Who Will Win Wimbledon 2023"
 ---
-Based on results from all matches from the 2022 and 2023 seasons.
+Based on results from all matches from the 2021, 2022, and 2023 seasons.
 ```{r}
 #| echo: false
 #| message: false
@@ -16,60 +16,78 @@ library(readxl)
 #| label: data
 
 #combining results for 2022 and 2023
-data1 <- read_excel("data/2023ATPResults2.xlsx") |>
+data1 <- read_excel("data/2023ATPResults3.xlsx") |>
   select(Surface, Winner:LRank, Wsets, Lsets, Comment) |>
   filter(Comment == "Completed") |>
   mutate(WRank = as.double(WRank), LRank = as.double(LRank)) |>
   mutate(WRank = replace(WRank, is.na(WRank), 10000),
          LRank = replace(LRank, is.na(LRank), 10000)) |>
-  mutate(upset = if_else(WRank > LRank, 1, 0))
+  mutate(upset = if_else(WRank > LRank, 1, 0)) |> 
+  mutate(year = "2023")
 data2 <- read_excel("data/2022ATPResults.xlsx") |>
   select(Surface, Winner:LRank, Wsets, Lsets, Comment) |>
   filter(Comment == "Completed") |>
   mutate(WRank = as.double(WRank), LRank = as.double(LRank)) |>
   mutate(WRank = replace(WRank, is.na(WRank), 10000),
          LRank = replace(LRank, is.na(LRank), 10000)) |>
-  mutate(upset = if_else(WRank > LRank, 1, 0))
-data <- bind_rows(data1, data2)
+  mutate(upset = if_else(WRank > LRank, 1, 0)) |> 
+  mutate(year = "2022")
+data3 <- read_excel("data/2021ATPResults.xlsx") |>
+  select(Surface, Winner:LRank, Wsets, Lsets, Comment) |>
+  filter(Comment == "Completed") |>
+  mutate(WRank = as.double(WRank), LRank = as.double(LRank)) |>
+  mutate(WRank = replace(WRank, is.na(WRank), 10000),
+         LRank = replace(LRank, is.na(LRank), 10000)) |>
+  mutate(upset = if_else(WRank > LRank, 1, 0)) |> 
+  mutate(year = "2021")
+data <- bind_rows(data1, data2, data3)
+```
 
+```{r}
+#| echo: false
+#| warning: false
 #creating each stat as own tibble
 player_wins <- data |> 
-  count(Winner, .by = Surface) |>
-  rename(surface = .by, name = Winner, num_wins = n)
+  count(Winner, surface = Surface, year) |>
+  rename(name = Winner, num_wins = n)
 
 player_losses <- data |>
-  count(Loser, .by = Surface) |>
-  rename(surface = .by, name = Loser, num_losses = n)
+  count(Loser, surface = Surface, year) |>
+  rename(name = Loser, num_losses = n)
 
 player_upset_wins <- data |>
-  summarize(num_upsets = sum(upset), .by = c(Surface, Winner)) |>
+  summarize(num_upsets = sum(upset), .by = c(Surface, Winner, year)) |>
   rename(surface = Surface, name = Winner)
 
 player_upset_losses <- data |>
-  summarize(num_was_upset = sum(upset), .by = c(Surface, Loser)) |>
+  summarize(num_was_upset = sum(upset), .by = c(Surface, Loser, year)) |>
   rename(surface = Surface, name = Loser)
 
 player_win_sets <- data |>
   summarize(wsets_won = sum(Wsets, na.rm = TRUE), 
             wsets_lost = sum(Lsets, na.rm = TRUE), 
-            .by = c(Surface, Winner)) |>
+            .by = c(Surface, Winner, year)) |>
   rename(surface = Surface, name = Winner)
 
 player_loss_sets <- data |>
   summarize(lsets_won = sum(Lsets, na.rm = TRUE), 
             lsets_lost = sum(Wsets, na.rm = TRUE), 
-            .by = c(Surface, Loser)) |>
+            .by = c(Surface, Loser, year)) |>
   rename(surface = Surface, name = Loser)
+```
 
+```{r}
+#| echo: false
+#| warning: false
 #joining tibbles
-upsets <- left_join(player_upset_wins, player_upset_losses, by = c("name", "surface")) |>
+upsets <- left_join(player_upset_wins, player_upset_losses, by = c("name", "surface", "year")) |>
   replace_na(list(num_was_upset = 0))
-wins_and_losses <- left_join(player_wins, player_losses, by = c("name", "surface")) |>
+wins_and_losses <- left_join(player_wins, player_losses, by = c("name", "surface", "year")) |>
   replace_na(list(num_losses = 0))
-won_lost_sets <- left_join(player_win_sets, player_loss_sets, by = c("name", "surface")) |>
+won_lost_sets <- left_join(player_win_sets, player_loss_sets, by = c("name", "surface", "year")) |>
   replace_na(list(lsets_won = 0, lsets_lost = 0, wsets_won = 0, wsets_lost = 0))
-win_loss_upset <- left_join(wins_and_losses, upsets, by = c("name", "surface"))
-all_stats <- left_join(win_loss_upset, won_lost_sets, by = c("name", "surface")) |>
+win_loss_upset <- left_join(wins_and_losses, upsets, by = c("name", "surface", "year"))
+all_stats <- left_join(win_loss_upset, won_lost_sets, by = c("name", "surface", "year")) |>
   mutate(sets_won = wsets_won + lsets_won,
          sets_lost = wsets_lost + lsets_lost) |>
   select(name:num_was_upset, sets_won, sets_lost) |>
@@ -86,10 +104,37 @@ name_vector <- ppl_in_wimbledon$name
 #Wolf J.J. instead of Wolf J.
 
 selected_rows <- all_stats[all_stats$name %in% name_vector, ]
-selected_rows |>
- mutate(points = if_else(surface == "Grass", 3*((num_wins - num_losses)*50 + 5*num_upsets - 2*num_was_upset + (sets_won - sets_lost)/2)/2, (num_wins - num_losses)*50 + 5*num_upsets - 2*num_was_upset + (sets_won - sets_lost)/2)) |>
+top_ten <- selected_rows |>
+ mutate(odds1 = if_else(surface == "Grass", 
+                        2.5*((num_wins - num_losses)*50 + 2*num_upsets - 2*num_was_upset + (sets_won - sets_lost)/2),
+                        (num_wins - num_losses)*50 + 2*num_upsets - 2*num_was_upset + (sets_won - sets_lost)/2)) |>
+  select(name, surface, year, odds1) |>
+  mutate(odds = if_else(year == 2023, odds1 * 2, 
+                          if_else(year == 2022, odds1 * 1,
+                                    odds1 * 0.5))) |>
   group_by(name) |>
-  summarize(sum_points = sum(points)) |>
-  arrange(desc(sum_points))
+  summarize(total_odds = sum(odds)) |>
+  filter(total_odds >= 0) |>
+  mutate(prob = total_odds / sum(total_odds)) |>
+  arrange(desc(prob)) |>
+  slice(1:10)
+
+#write_csv(selected_rows, "all_stats.csv")
 ```
 
+```{r}
+#| echo: false
+#| warning: false
+#probability graph
+top_ten |>
+  ggplot(aes(x = reorder(name, -prob), y = prob)) +
+  geom_bar(stat = "identity") +
+  scale_y_continuous(labels = scales::percent_format()) +
+  labs(x = "", y = "Probability",
+       title = "Top Ten Most Likely to Win") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_x_discrete(labels = c("C. Alcaraz", "D. Medvedev", "N. Djokovic", "J. Sinner", "A. Rublev", "C. Norrie", "S. Tsitsipas", "T. Fritz", "C. Ruud", "A. Zverev"))
+```
+
+explain the prediction formula (year, surface, win/loss, upsets, sets)

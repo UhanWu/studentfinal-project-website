@@ -1,0 +1,33 @@
+---
+title: "Statistics"
+editor: visual
+---
+
+test page for now
+```{r}
+#| echo: false
+#| message: false
+library(tidyverse)
+```
+
+```{r}
+#| echo: false
+#| warning: false
+all_stats_by_year <- read_csv("csvs/all_stats.csv")
+all_stats <- all_stats_by_year |>
+  summarize(num_wins = sum(num_wins),
+            num_losses = sum(num_losses),
+            num_upsets = sum(num_upsets),
+            num_was_upset = sum(num_was_upset),
+            sets_won = sum(sets_won),
+            sets_lost = sum(sets_lost),
+            .by = c(name, surface)) |>
+  mutate(wl_ratio = )
+  
+```
+
+have a graph for: 
+highest win/loss ratios (each surface),
+upset/was upset graph,
+
+

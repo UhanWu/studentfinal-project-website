@@ -1,0 +1,4 @@
+- source: project
+  quarto-pub:
+    - id: d61ae124-4145-461b-ae42-5b4a26a82f58
+      url: 'https://averyzheng-yay.quarto.pub/wimbledon2023prediction'
