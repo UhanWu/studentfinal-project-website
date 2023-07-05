@@ -16,8 +16,8 @@
   {
     "objectID": "page1.html",
     "href": "page1.html",
-    "title": "Statistics",
+    "title": "stats",
     "section": "",
-    "text": "test page for now\n\n\n# A tibble: 305 × 8\n   name  surface num_wins num_losses num_upsets num_was_upset sets_won sets_lost\n   &lt;chr&gt; &lt;chr&gt;      &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;         &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;\n 1 albo… Clay           2          8          0             1        7        20\n 2 albo… Grass          1          4          1             0        4         9\n 3 albo… Hard          17         19          4             4       45        48\n 4 alca… Clay          59         12         11             7      136        48\n 5 alca… Grass          9          2          0             1       23        11\n 6 alca… Hard          51         17         15             8      124        55\n 7 altm… Clay          12         17          7             5       36        43\n 8 altm… Grass          2          4          2             2        4        10\n 9 altm… Hard           4         17          1             6       16        38\n10 arna… Clay           5          4          4             0       13        12\n# ℹ 295 more rows\n\n\nhave a graph for: highest win/loss ratios (each surface), upset/was upset graph,"
+    "text": "Disclaimer: These statistics are only drawn from the past three seasons (2021-2023).\n\n\n\n\n\n\n\n\n\n\nhave a graph for: highest win/loss ratios (each surface), upset/was upset graph,"
   }
 ]
