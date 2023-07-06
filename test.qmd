@@ -1,0 +1,68 @@
+---
+title: "test"
+editor: visual
+---
+
+```{r}
+top_ten <- selected_rows |>
+ mutate(odds1 = if_else(surface == "Grass", 
+                        2.5*((num_wins - num_losses)*50 + 2*num_upsets - 2*num_was_upset + (sets_won - sets_lost)/2),
+                        (num_wins - num_losses)*50 + 2*num_upsets - 2*num_was_upset + (sets_won - sets_lost)/2)) |>
+  mutate(odds = if_else(year == 2023, odds1 * 2, 
+                          if_else(year == 2022, odds1 * 1,
+                                    odds1 * 0.5))) |>
+  group_by(name) |>
+  summarize(total_odds = sum(odds)) |>
+  filter(total_odds >= 0) |>
+  mutate(prob = total_odds / sum(total_odds)) |>
+  arrange(desc(prob)) |>
+  slice(1:25)
+
+
+modelfit <- stan_glm(top_ten, formula = prob ~ 1,family = gaussian, refresh = 0,
+                       seed = 76)
+
+pp <- posterior_predict(modelfit, newdata = tibble(name = 1 : 25)) |>
+    as_tibble() |>
+    rowwise() 
+
+pregraph <- pp |>
+ pivot_longer(cols = 1:25,
+               names_to = "name",
+               values_to = "probability")
+
+
+```
+```{r}
+pregraph |>
+  ggplot(aes(y = probability, x = name)) +
+    geom_jitter(alpha = 0.1)
+
+
+
+tennisplot <- pregraph |> 
+  mutate(probability = as.numeric(probability)) |>
+  mutate(segment = cut(probability,
+                     breaks = c(-Inf, seq(-0.04, 0.15, 0.005), Inf),
+                     labels = 1:40)) |>
+  summarize(total = n(), 
+            .by = c(segment, name)) |> 
+  mutate(name = as.factor(name)) |> 
+  mutate(segment = as.factor(segment)) |> 
+  ggplot() +
+    geom_point(aes(x = name, y = segment, color = total)) +
+    scale_color_continuous(limits = c(0, 1000)) +
+    theme(legend.position = "none")
+```
+```{r}
+plot_gg(tennisplot,
+       width = 3.5,
+         zoom = 0.65,
+         theta = 25,
+         phi = 30,
+         sunangle = 225,
+         soliddepth = -0.5,
+         raytrace = FALSE,
+         windowsize = c(2048,1536))
+```
+
