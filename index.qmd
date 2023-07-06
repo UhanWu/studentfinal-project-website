@@ -1,5 +1,5 @@
 ---
-title: "Predicting Who Will Win Wimbledon 2023"
+title: "Wimbledon 2023: Men's Singles and Women's Singles"
 ---
 Based on results from all matches from the 2021, 2022, and 2023 seasons.
 ```{r}
@@ -130,13 +130,126 @@ top_ten <- selected_rows |>
 #probability graph
 top_ten |>
   ggplot(aes(x = reorder(name, -prob), y = prob)) +
-  geom_bar(stat = "identity", fill = "cornflowerblue") +
+  geom_bar(stat = "identity", fill = "deepskyblue3") +
   scale_y_continuous(labels = scales::percent_format()) +
   labs(x = "", y = "Probability",
-       title = "Top Ten Most Likely to Win") +
+       title = "Men's Singles Top Ten Front Runners",
+       subtitle = "Alcaraz, Medvedev, and Djokovic have the highest chances of winning.") +
   theme_classic() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   scale_x_discrete(labels = c("C. Alcaraz", "D. Medvedev", "N. Djokovic", "J. Sinner", "A. Rublev", "C. Norrie", "S. Tsitsipas", "T. Fritz", "C. Ruud", "A. Zverev"))
 ```
 
-explain the prediction formula (year, surface, win/loss, upsets, sets)
+```{r}
+#| echo: false
+#| warning: false
+#| label: stats_women
+data1w <- read_excel("data/2023WTAResults.xlsx") |>
+  select(Surface, Winner:LRank, Wsets, Lsets, Comment) |>
+  filter(Comment == "Completed") |>
+  mutate(WRank = as.double(WRank), LRank = as.double(LRank)) |>
+  mutate(WRank = replace(WRank, is.na(WRank), 10000),
+         LRank = replace(LRank, is.na(LRank), 10000)) |>
+  mutate(upset = if_else(WRank > LRank, 1, 0)) |> 
+  mutate(year = "2023")
+data2w <- read_excel("data/2022WTAResults.xlsx") |>
+  select(Surface, Winner:LRank, Wsets, Lsets, Comment) |>
+  filter(Comment == "Completed") |>
+  mutate(WRank = as.double(WRank), LRank = as.double(LRank)) |>
+  mutate(WRank = replace(WRank, is.na(WRank), 10000),
+         LRank = replace(LRank, is.na(LRank), 10000)) |>
+  mutate(upset = if_else(WRank > LRank, 1, 0)) |> 
+  mutate(year = "2022")
+data3w <- read_excel("data/2021WTAResults.xlsx") |>
+  select(Surface, Winner:LRank, Wsets, Lsets, Comment) |>
+  filter(Comment == "Completed") |>
+  mutate(WRank = as.double(WRank), LRank = as.double(LRank)) |>
+  mutate(WRank = replace(WRank, is.na(WRank), 10000),
+         LRank = replace(LRank, is.na(LRank), 10000)) |>
+  mutate(upset = if_else(WRank > LRank, 1, 0)) |> 
+  mutate(year = "2021")
+dataw <- bind_rows(data1w, data2w, data3w)
+
+
+player_winsw <- dataw |> 
+  count(Winner, surface = Surface, year) |>
+  rename(name = Winner, num_wins = n)
+
+player_lossesw <- dataw |>
+  count(Loser, surface = Surface, year) |>
+  rename(name = Loser, num_losses = n)
+
+player_upset_winsw <- dataw |>
+  summarize(num_upsets = sum(upset), .by = c(Surface, Winner, year)) |>
+  rename(surface = Surface, name = Winner)
+
+player_upset_lossesw <- dataw |>
+  summarize(num_was_upset = sum(upset), .by = c(Surface, Loser, year)) |>
+  rename(surface = Surface, name = Loser)
+
+player_win_setsw <- dataw |>
+  summarize(wsets_won = sum(Wsets, na.rm = TRUE), 
+            wsets_lost = sum(Lsets, na.rm = TRUE),
+            avg_sets_lost = mean(Lsets, na.rm = TRUE),
+            .by = c(Surface, Winner, year)) |>
+  rename(surface = Surface, name = Winner)
+
+player_loss_setsw <- dataw |>
+  summarize(lsets_won = sum(Lsets, na.rm = TRUE), 
+            lsets_lost = sum(Wsets, na.rm = TRUE), 
+            .by = c(Surface, Loser, year)) |>
+  rename(surface = Surface, name = Loser)
+
+
+upsetsw <- left_join(player_upset_winsw, player_upset_lossesw, by = c("name", "surface", "year")) |>
+  replace_na(list(num_was_upset = 0))
+wins_and_lossesw <- left_join(player_winsw, player_lossesw, by = c("name", "surface", "year")) |>
+  replace_na(list(num_losses = 0))
+won_lost_setsw <- left_join(player_win_setsw, player_loss_setsw, by = c("name", "surface", "year")) |>
+  replace_na(list(lsets_won = 0, lsets_lost = 0, wsets_won = 0, wsets_lost = 0))
+win_loss_upsetw <- left_join(wins_and_lossesw, upsetsw, by = c("name", "surface", "year"))
+
+all_statsw <- left_join(win_loss_upsetw, won_lost_setsw, by = c("name", "surface", "year")) |>
+  mutate(sets_won = wsets_won + lsets_won,
+         sets_lost = wsets_lost + lsets_lost) |>
+  select(name:num_was_upset, sets_won, sets_lost, avg_sets_lost) |>
+  mutate(name = tolower(name))
+
+ppl_in_wimbledonw <- read_excel("data/Wimbledon2023DrawWomens.xlsx") |>
+  mutate(name = tolower(name))
+
+name_vectorw <- ppl_in_wimbledonw$name
+
+selected_rowsw <- all_statsw[all_statsw$name %in% name_vectorw, ]
+top_tenw <- selected_rowsw |>
+ mutate(odds1 = if_else(surface == "Grass", 
+                        2.5*((num_wins - num_losses)*50 + 2*num_upsets - 2*num_was_upset + (sets_won - sets_lost)/2),
+                        (num_wins - num_losses)*50 + 2*num_upsets - 2*num_was_upset + (sets_won - sets_lost)/2)) |>
+  select(name, surface, year, odds1) |>
+  mutate(odds = if_else(year == 2023, odds1 * 2, 
+                          if_else(year == 2022, odds1 * 1,
+                                    odds1 * 0.5))) |>
+  group_by(name) |>
+  summarize(total_odds = sum(odds)) |>
+  filter(total_odds >= 0) |>
+  mutate(prob = total_odds / sum(total_odds)) |>
+  arrange(desc(prob)) |>
+  slice(1:10)
+
+top_tenw |>
+  ggplot(aes(x = reorder(name, -prob), y = prob)) +
+  geom_bar(stat = "identity", fill = "thistle") +
+  scale_y_continuous(labels = scales::percent_format()) +
+  labs(x = "", y = "Probability",
+       title = "Women's Singles Top Ten Front Runners",
+       subtitle = "Swiatek has the highest chance of winning.") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_x_discrete(labels = c("I. Swiatek", "A. Sabalenka", "O. Jabeur", "J. Ostapenko", "E. Rybakina", "P. Kvitova", "C. Garcia", "J. Pegula", "B. Bencic", "E. Alexandrova"))
+
+#write_csv(all_statsw, "all_statsw.csv")
+```
+
+This prediction was based on a formula that weighed the total number of matches won/lost, number of upsets (where either the player beat someone of higher ranking or was beaten by someone with lower ranking), and total number of sets. The largest factor by far was the overall match record, and upsets and sets won/lost were worth a fraction of a single match. It also weighed matches played on the same surface as Wimbledon (grass) 2.5 times as much as those played on clay and hard court, and matches from more recent seasons more heavily (halving every year). 
+
+While I believe this prediction to be fairly accurate, as with all predictive models, especially in sports, there are numerous other factors that have not been considered. For example, it does not include the full match history of every player, which undermines those like Djokovic (who has had an impresssive 20-year career to say the least) and wildcards like  Svitolina (who spent time away from the sport due to personal reasons). 

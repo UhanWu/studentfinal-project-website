@@ -2,9 +2,9 @@
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "Predicting Who Will Win Wimbledon 2023",
+    "title": "Wimbledon 2023: Men’s Singles and Women’s Singles",
     "section": "",
-    "text": "Based on results from all matches from the 2021, 2022, and 2023 seasons.\n\n\n\n\n\nexplain the prediction formula (year, surface, win/loss, upsets, sets)"
+    "text": "Based on results from all matches from the 2021, 2022, and 2023 seasons.\n\n\n\n\n\n\n\n\n\n\nThis prediction was based on a formula that weighed the total number of matches won/lost, number of upsets (where either the player beat someone of higher ranking or was beaten by someone with lower ranking), and total number of sets. The largest factor by far was the overall match record, and upsets and sets won/lost were worth a fraction of a single match. It also weighed matches played on the same surface as Wimbledon (grass) 2.5 times as much as those played on clay and hard court, and matches from more recent seasons more heavily (halving every year).\nWhile I believe this prediction to be fairly accurate, as with all predictive models, especially in sports, there are numerous other factors that have not been considered. For example, it does not include the full match history of every player, which undermines those like Djokovic (who has had an impresssive 20-year career to say the least) and wildcards like Svitolina (who spent time away from the sport due to personal reasons)."
   },
   {
     "objectID": "about.html",
@@ -16,7 +16,7 @@
   {
     "objectID": "page1.html",
     "href": "page1.html",
-    "title": "stats",
+    "title": "Stats",
     "section": "",
     "text": "Disclaimer: These statistics are only drawn from the past three seasons (2021-2023).\n\n\n\n\n\n\n\n\n\n\nhave a graph for: highest win/loss ratios (each surface), upset/was upset graph,"
   }
