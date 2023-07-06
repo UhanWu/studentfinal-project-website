@@ -140,6 +140,7 @@ top_ten |>
   theme_classic() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   scale_x_discrete(labels = c("C. Alcaraz", "D. Medvedev", "N. Djokovic", "J. Sinner", "A. Rublev", "C. Norrie", "S. Tsitsipas", "T. Fritz", "C. Ruud", "A. Zverev"))
+#
 ```
 
 This graph only takes into account matches from 2021-2023 which excludes the majority of Djokovic's historic 20-year career that includes 23 Grand Slam titles - seven of which are Wimbledon titles. Additionally, because it only accounts for the past 3 years, it weighs Medvedev's recent-ish success more heavily than it should. In reality, Alcaraz and Djokovic have an about equal shot of winning Wimbledon this year, with Medvedev being lower than second. 
@@ -254,6 +255,7 @@ top_tenw |>
   scale_x_discrete(labels = c("I. Swiatek", "A. Sabalenka", "O. Jabeur", "J. Ostapenko", "E. Rybakina", "P. Kvitova", "C. Garcia", "J. Pegula", "B. Bencic", "E. Alexandrova"))
 
 #write_csv(all_statsw, "all_statsw.csv")
+#
 ```
 
 This graph excludes the full match history of almost every player in this draw, so it almost completely excludes players like Svitolina who didn't play on tour in the past few years due to injury/personal reasons. Other than that, I think it is fairly accurate.
