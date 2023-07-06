@@ -87,7 +87,11 @@ ul.task-list li input[type="checkbox"] {
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="./page1.html" rel="" target="">
- <span class="menu-text">Stats</span></a>
+ <span class="menu-text">Men’s Stats</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./page2.html" rel="" target="">
+ <span class="menu-text">Women’s Stats</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="./about.html" rel="" target="">
@@ -105,7 +109,14 @@ ul.task-list li input[type="checkbox"] {
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#mens" id="toc-mens" class="nav-link active" data-scroll-target="#mens">Men’s</a></li>
+  <li><a href="#womens" id="toc-womens" class="nav-link" data-scroll-target="#womens">Women’s</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -128,20 +139,26 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 <p>Based on results from all matches from the 2021, 2022, and 2023 seasons.</p>
+<section id="mens" class="level2">
+<h2 class="anchored" data-anchor-id="mens">Men’s</h2>
 <div class="cell">
 <div class="cell-output-display">
 <p><img src="index_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
+<p>This graph only takes into account matches from 2021-2023 which excludes the majority of Djokovic’s historic 20-year career that includes 23 Grand Slam titles - seven of which are Wimbledon titles. Additionally, because it only accounts for the past 3 years, it weighs Medvedev’s recent-ish success more heavily than it should. In reality, Alcaraz and Djokovic have an about equal shot of winning Wimbledon this year, with Medvedev being lower than second.</p>
+</section>
+<section id="womens" class="level2">
+<h2 class="anchored" data-anchor-id="womens">Women’s</h2>
 <div class="cell">
 <div class="cell-output-display">
 <p><img src="index_files/figure-html/stats_women-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>This prediction was based on a formula that weighed the total number of matches won/lost, number of upsets (where either the player beat someone of higher ranking or was beaten by someone with lower ranking), and total number of sets. The largest factor by far was the overall match record, and upsets and sets won/lost were worth a fraction of a single match. It also weighed matches played on the same surface as Wimbledon (grass) 2.5 times as much as those played on clay and hard court, and matches from more recent seasons more heavily (halving every year).</p>
-<p>While I believe this prediction to be fairly accurate, as with all predictive models, especially in sports, there are numerous other factors that have not been considered. For example, it does not include the full match history of every player, which undermines those like Djokovic (who has had an impresssive 20-year career to say the least) and wildcards like Svitolina (who spent time away from the sport due to personal reasons).</p>
+<p>This graph excludes the full match history of almost every player in this draw, so it almost completely excludes players like Svitolina who didn’t play on tour in the past few years due to injury/personal reasons. Other than that, I think it is fairly accurate.</p>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

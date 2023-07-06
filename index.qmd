@@ -10,6 +10,8 @@ library(tidyverse)
 library(readxl)
 ```
 
+## Men's
+
 ```{r}
 #| echo: false
 #| warning: false
@@ -140,6 +142,10 @@ top_ten |>
   scale_x_discrete(labels = c("C. Alcaraz", "D. Medvedev", "N. Djokovic", "J. Sinner", "A. Rublev", "C. Norrie", "S. Tsitsipas", "T. Fritz", "C. Ruud", "A. Zverev"))
 ```
 
+This graph only takes into account matches from 2021-2023 which excludes the majority of Djokovic's historic 20-year career that includes 23 Grand Slam titles - seven of which are Wimbledon titles. Additionally, because it only accounts for the past 3 years, it weighs Medvedev's recent-ish success more heavily than it should. In reality, Alcaraz and Djokovic have an about equal shot of winning Wimbledon this year, with Medvedev being lower than second. 
+
+## Women's
+
 ```{r}
 #| echo: false
 #| warning: false
@@ -244,12 +250,10 @@ top_tenw |>
        title = "Women's Singles Top Ten Front Runners",
        subtitle = "Swiatek has the highest chance of winning.") +
   theme_classic() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  +
   scale_x_discrete(labels = c("I. Swiatek", "A. Sabalenka", "O. Jabeur", "J. Ostapenko", "E. Rybakina", "P. Kvitova", "C. Garcia", "J. Pegula", "B. Bencic", "E. Alexandrova"))
 
 #write_csv(all_statsw, "all_statsw.csv")
 ```
 
-This prediction was based on a formula that weighed the total number of matches won/lost, number of upsets (where either the player beat someone of higher ranking or was beaten by someone with lower ranking), and total number of sets. The largest factor by far was the overall match record, and upsets and sets won/lost were worth a fraction of a single match. It also weighed matches played on the same surface as Wimbledon (grass) 2.5 times as much as those played on clay and hard court, and matches from more recent seasons more heavily (halving every year). 
-
-While I believe this prediction to be fairly accurate, as with all predictive models, especially in sports, there are numerous other factors that have not been considered. For example, it does not include the full match history of every player, which undermines those like Djokovic (who has had an impresssive 20-year career to say the least) and wildcards like  Svitolina (who spent time away from the sport due to personal reasons). 
+This graph excludes the full match history of almost every player in this draw, so it almost completely excludes players like Svitolina who didn't play on tour in the past few years due to injury/personal reasons. Other than that, I think it is fairly accurate.

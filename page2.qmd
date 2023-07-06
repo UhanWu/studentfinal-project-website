@@ -1,5 +1,5 @@
 ---
-title: "Men's Stats"
+title: "Women's Stats"
 editor: visual
 ---
 
@@ -12,7 +12,7 @@ library(tidyverse)
 ```{r}
 #| echo: false
 #| warning: false
-all_stats_by_year <- read_csv("csvs/all_stats.csv")
+all_stats_by_year <- read_csv("csvs/all_statsw.csv")
 all_stats <- all_stats_by_year |>
   summarize(num_wins = sum(num_wins),
             num_losses = sum(num_losses),
@@ -23,7 +23,7 @@ all_stats <- all_stats_by_year |>
             avg_sets_lost = mean(avg_sets_lost),
             .by = c(name, surface))
 
-ten_players <- c("alcaraz c.", "medvedev d.", "djokovic n.", "sinner j.", "rublev a.", "norrie c.", "tsitsipas s.", "fritz t.", "ruud c.", "zverev a.")
+ten_players <- c("swiatek i.", "sabalenka a.", "jabeur o.", "ostapenko j.", "rybakina e.", "kvitova p.", "garcia c.", "pegula j.", "bencic b.", "alexandrova e.")
 
 ```
 
@@ -40,8 +40,8 @@ all_stats |>
   geom_bar(stat = "identity", position = "dodge", color = "black", width = 0.65) +
   theme_classic() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  scale_x_discrete(labels = c("N. Djokovic", "C. Alcaraz", "D. Medvedev", "A. Zverev", "A. Rublev", "J. Sinner", "S. Tsitsipas", "C. Norrie", "T. Fritz", "C. Ruud")) +
-  scale_y_continuous(breaks = c(0, 0.2, 0.4, 0.6, 0.8, 1),
+  scale_x_discrete(labels = c("I. Swiatek", "O. Jabeur", "A. Sabalenka", "E. Rybakina", "B. Bencic", "P. Kvitova", "J. Ostapenko", "J. Pegula", "E. Alexandrova", "C. Garcia")) +
+  scale_y_continuous(breaks = c(0, 0.2, 0.4, 0.6, 0.8, 1), 
                      labels = scales::percent_format()) +
   labs(x = "", y = "Win Percentage",
        title = "Win Percentage of the Top Ten Front Runners",
@@ -52,6 +52,7 @@ all_stats |>
 #| echo: false
 #| warning: false
 #| label: graph2
+#change this graph to "average number of sets lost in matches they've won"
 all_stats |>
   select(name, surface, avg_sets_lost) |>
   filter(name %in% ten_players) |>
@@ -60,12 +61,11 @@ all_stats |>
   geom_bar(stat = "identity", position = "dodge", color = "black", width = 0.65) +
   theme_classic() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  scale_x_discrete(labels = c("C. Ruud", "D. Medvedev", "A. Zverev", "N. Djokovic", "A. Rublev", "C. Norrie", "T. Fritz", "J. Sinner", "S. Tsitsipas", "C. Alcaraz")) +
+  scale_x_discrete(labels = c("E. Rybakina", "I. Swiatek", "E. Alexandrova", "A. Sabalenka", "P. Kvitova", "J. Pegula", "O. Jabeur", "J. Ostapenko", "B. Bencic", "C. Garcia")) +
   labs(x = "", y = "Sets",
        title = "Average Number of Sets Lost in Matches Won",
        fill = "Surface") +
-  scale_y_continuous(breaks = c(0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0))
+  scale_y_continuous(breaks = c(0.0, 0.1, 0.2, 0.3, 0.4, 0.5))
 ```
 
 Disclaimer: These statistics are only drawn from the past three seasons (2021-2023).
-
